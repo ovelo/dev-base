@@ -26,13 +26,13 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ghcr.io/ovelo/dev-base:latest
+          tags: ghcr.io/${{ github.repository }}:latest
           build-args: |
             ADDITIONAL_SSH_KEYS=${{ inputs.additional_ssh_keys || secrets.ADDITIONAL_SSH_KEYS }}
