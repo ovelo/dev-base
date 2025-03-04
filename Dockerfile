@@ -1,8 +1,13 @@
 FROM ubuntu:latest
 LABEL maintainer="ovelo"
 
-# 安装 SSH 工具
-RUN apt-get update && apt-get install -y openssh-client
+ENV DEBIAN_FRONTEND=noninteractive
+RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.tuna.tsinghua.edu.cn@g' /etc/apt/sources.list \
+    && sed -i 's@//.*security.ubuntu.com@//mirrors.tuna.tsinghua.edu.cn@g' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y openssh-server \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # 创建 SSH 目录并设置权限
 RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
@@ -15,5 +20,12 @@ ARG ADDITIONAL_SSH_KEYS
 RUN if [ -n "$ADDITIONAL_SSH_KEYS" ]; then \
       echo "$ADDITIONAL_SSH_KEYS" | tr ',' '\n' >> /root/.ssh/authorized_keys; \
     fi && chmod 600 /root/.ssh/authorized_keys
+# 配置 SSH 服务，禁用密码登录
+RUN mkdir /var/run/sshd \
+    && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
+    && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
+    && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
-CMD ["bash", "-c", "cat /root/.ssh/authorized_keys && echo 'SSH keys loaded'"]
+WORKDIR /20zhaiyilin
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
