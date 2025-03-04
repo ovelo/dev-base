@@ -37,6 +37,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}/dev-base:latest  # 使用 dev-base
+          tags: ghcr.io/${{ github.repository }}:latest  # 使用 dev-base
           build-args: |
             ADDITIONAL_SSH_KEYS=${{ inputs.additional_ssh_keys || secrets.ADDITIONAL_SSH_KEYS }}
