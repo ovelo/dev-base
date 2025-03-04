@@ -25,7 +25,7 @@ RUN mkdir /var/run/sshd \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
     && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
-
+    && sed -i '$a AuthorizedKeysFile .ssh/authorized_keys' /etc/ssh/sshd_config
 WORKDIR /20zhaiyilin
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
